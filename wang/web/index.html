@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>url</title>
+  <style>
+    span {
+      cursor: pointer;
+    }
+    input {
+      width: 80%;
+      border-radius: .5vmin;
+      outline: 0;
+      height: 3vmin;
+      margin-bottom: 3vmin;
+    }
+    table { width: 70%; margin:0 auto;}
+    td,th { 
+      border: .5px solid #666;
+      padding: 1vmin 2vmin;
+      text-align: center;   
+    }
+    td ~ td,th ~ th {
+      border-left:0;
+    }
+    tr td {
+      border-top:0;
+    }
+    button {
+      width: 80%;
+      padding: 1vmin 0 1vmin;
+      border-radius: 1vmin;
+      outline: 0;
+      margin: 0 auto 2vmin;
+      font-size: 2vmin;
+      font-weight: bold;
+    }
+    div {
+      width: 45%;
+      margin: 0 auto;
+    }
+    li { list-style: none;float: left;margin: 0 .6vmin;}
+  </style>
+</head>
+<body onload="get_data()">
+  <div>
+      <!-- <button onclick="my()">查看</button> -->
+      <button onclick="url()">拉取</button>
+      <input type="text" name="" id="" >&nbsp;&nbsp;&nbsp;<span onclick="delet()">清除</span>
+  </div>
+  <table id="d1" cellspacing="0" ></table>
+
+  <script src="./js/jquery-3.3.1.min.js"></script>
+  <script>
+      function get_data() {
+        $.ajax({
+            url:'http://localhost:3000/sql/list',
+            type:'get',
+            dataType:'json',
+            success: function(res) {
+              let s = `<tr><th id="dd">id</th><th>title</th><th>url</th><th>Introduction</th></tr>`;
+              for(let i of res) {
+                 s += `<tr><td>${i.id}</td><td>${i.title}</td><td>${i.url}</td><td>${i.Introduction}</td></tr>`;
+              }
+              document.getElementById('d1').innerHTML = '';
+              document.getElementById('d1').innerHTML = s;
+            } 
+        });
+
+        let url = localStorage.getItem('url');
+        url ? $('input').val(url) : '';
+      }
+
+      function url() {
+         let val = $('input').val();
+         if (val == '') {
+           return;
+         }
+         localStorage.setItem('url', val);
+         $.ajax({
+            url:'http://localhost:3000/sql/url',
+            type:'get',
+            dataType:'json',
+            data: {
+              url:val,
+            },
+            success: function(res) {
+              // console.log(res);
+              $('#d1').html(res);
+              let shuju = [];
+              let trs = $('tbody').children();
+              trs.each((i, item) => {
+              if (i == 0) { return; }
+              let obj = {};
+              obj['preDrawCode'] = [];
+              obj['preDrawIssue'] = $(item).children()[1];
+              obj['preDrawIssue'] = $(obj['preDrawIssue']).html();
+              obj['preDrawTime'] = $(item).children()[0];
+              obj['preDrawTime'] = $(obj['preDrawTime']).html();
+              let numbers = $(item).children()[2];
+              let numbers1 = $(numbers).children()[0];
+              let numbers2 = $(numbers1).children();
+              numbers2.each( (i, item) => {
+                let it = $(item).children()[0];
+                obj['preDrawCode'].push( $(it).html() );
+              } )
+              shuju.push(obj);
+            })
+              
+              console.log(shuju);
+
+              
+
+
+
+
+              switch (res.toString()) {
+                case '0':
+                  alert('爬取失败!!!');
+                  break;
+                case '2':
+                  alert('数据插入失败');
+                  break;
+                case '1':
+                  alert('ok');
+                  break;    
+              }
+              // location.reload();              
+            },
+            error: function () {
+              alert('请求失败');
+              location.reload();
+            }
+        });
+      }
+
+      function delet() {
+        localStorage.removeItem('url');
+        location.reload();
+      }
+  </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>url</title>
+  <style>
+    span {
+      cursor: pointer;
+    }
+    input {
+      width: 80%;
+      border-radius: .5vmin;
+      outline: 0;
+      height: 3vmin;
+      margin-bottom: 3vmin;
+    }
+    table { width: 60%; margin:0 auto;}
+    td,th { 
+      border: .5px solid #666;
+      padding: 1vmin 2vmin;
+      text-align: center;   
+    }
+    td ~ td,th ~ th {
+      border-left:0;
+    }
+    tr td {
+      border-top:0;
+    }
+    button {
+      width: 80%;
+      padding: 1vmin 0 1vmin;
+      border-radius: 1vmin;
+      outline: 0;
+      margin: 0 auto 2vmin;
+      font-size: 2vmin;
+      font-weight: bold;
+    }
+    div {
+      width: 45%;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body onload="my()">
+  <div>
+      <!-- <button onclick="my()">查看</button> -->
+      <button onclick="url()">拉取</button>
+      <input type="text" name="" id="" >&nbsp;&nbsp;&nbsp;<span onclick="delet()">清除</span>
+  </div>
+  <table id="d1" cellspacing="0" ></table>
+
+  <script src="./js/jquery-3.3.1.min.js"></script>
+  <script>
+      function my() {
+        $.ajax({
+            url:'http://localhost:3001/sql/list',
+            type:'get',
+            dataType:'json',
+            success: function(res) {
+              let s = `<tr><th id="dd">id</th><th>title</th><th>url</th></tr>`;
+              for(let i of res) {
+                 s += `<tr><td>${i.id}</td><td>${i.title}</td><td>${i.url}</td></tr>`;
+              }
+              document.getElementById('d1').innerHTML = '';
+              document.getElementById('d1').innerHTML = s;
+            } 
+        });
+      }
+
+      function url() {
+         let val = $('input').val();
+         if (val == '') {
+           return;
+         }
+         $.ajax({
+            url:'http://localhost:3001/sql/url',
+            type:'get',
+            dataType:'json',
+            data: {
+              url:val,
+            },
+            success: function(res) {
+              if (res == 1) {
+                alert('ok!!');
+              }else{
+                alert('no!!!');
+              }
+              location.reload();
+            },
+            error: function () {
+              alert('no!!!!');
+              location.reload();
+            }
+        });
+      }
+
+      function delet() {
+        location.reload();
+      }
+  </script>
+</body>
+</html>
