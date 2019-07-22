@@ -83,38 +83,18 @@
             url:'http://localhost:3000/sql/url',
             type:'get',
             dataType:'json',
+            timeout: 100000,
             data: {
               url:val,
             },
             success: function(res) {
               // console.log(res);
               $('#d1').html(res);
-              let shuju = [];
-              let trs = $('tbody').children();
-              trs.each((i, item) => {
-              if (i == 0) { return; }
-              let obj = {};
-              obj['preDrawCode'] = [];
-              obj['preDrawIssue'] = $(item).children()[1];
-              obj['preDrawIssue'] = $(obj['preDrawIssue']).html();
-              obj['preDrawTime'] = $(item).children()[0];
-              obj['preDrawTime'] = $(obj['preDrawTime']).html();
-              let numbers = $(item).children()[2];
-              let numbers1 = $(numbers).children()[0];
-              let numbers2 = $(numbers1).children();
-              numbers2.each( (i, item) => {
-                let it = $(item).children()[0];
-                obj['preDrawCode'].push( $(it).html() );
-              } )
-              shuju.push(obj);
-            })
-              
-              console.log(shuju);
 
+            
               
 
-
-
+            
 
               switch (res.toString()) {
                 case '0':
@@ -131,7 +111,7 @@
             },
             error: function () {
               alert('请求失败');
-              location.reload();
+              // location.reload();
             }
         });
       }
